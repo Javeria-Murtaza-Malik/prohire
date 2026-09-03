@@ -37,17 +37,19 @@ export async function POST(req: NextRequest) {
 
   const answersByQuestion = new Map(answers.map((a) => [a.questionId.toString(), a]));
 
-  const transcript: TranscriptEntry[] = questions
-    .map((q) => {
-      const answer = answersByQuestion.get(q._id.toString());
-      if (!answer) return null;
-      return {
-        questionText: q.questionText,
-        answerText: answer.answerText,
-        depthScore: answer.evaluation?.depthScore
-      };
-    })
-    .filter((entry): entry is TranscriptEntry => entry !== null);
+ const transcript: TranscriptEntry[] = questions
+  .map((q) => {
+    const answer = answersByQuestion.get(q._id.toString());
+
+    if (!answer) return null;
+
+    return {
+      questionText: q.questionText,
+      answerText: answer.answerText,
+      depthScore: answer.evaluation?.depthScore
+    };
+  })
+  .filter((entry): entry is TranscriptEntry => entry !== null);
 
   if (transcript.length === 0) {
     return NextResponse.json({ error: "No answers recorded for this session." }, { status: 400 });
